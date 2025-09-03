@@ -4,6 +4,7 @@ Tavily MCP服务器
 按照NVIDIA官方MCP架构实现Tavily搜索工具
 """
 
+from ast import arguments
 import asyncio
 import json
 import logging
@@ -90,6 +91,25 @@ class TavilyMCPServer:
                         },
                         "required": ["company"]
                     }
+                ),
+                Tool(
+                    name="tavily_job_search",
+                    description="Search for job-related information and advice using Tavily API.",
+                    inputSchema={
+                        "type": "object",
+                        "properties": {
+                            "job_title": {
+                                "type": "string",
+                                "description": "职位名称"
+                            },
+                            "query_type": {
+                                "type": "string",
+                                "description": "查询类型（简历、面试、求职信等）",
+                                "enum": ["resume", "interview", "cover_letter", "salary", "skills", "general"]
+                            }
+                        },
+                        "required": ["job_title", "query_type"]
+                    }
                 )
             ]
         
@@ -103,6 +123,8 @@ class TavilyMCPServer:
                     return await self._tavily_weather_search(arguments)
                 elif name == "tavily_company_search":
                     return await self._tavily_company_search(arguments)
+                elif name == "tavily_job_search":
+                    return await self._tavily_job_search(arguments)
                 else:
                     raise ValueError(f"Unknown tool: {name}")
             except Exception as e:
@@ -157,6 +179,27 @@ class TavilyMCPServer:
         
         query = f"{company} company information official website"
         return await self._tavily_search({"query": query, "max_results": 3})
+
+    async def _tavily_job_search(self, arguments: Dict[str, Any]) -> List[TextContent]:
+        """执行求职信息搜索"""
+        job_title = arguments.get("job_title", "")
+        query_type = arguments.get("query_type", "general")
+        
+        if not job_title:
+            return [TextContent(type="text", text="Error: Job title is required")]
+        
+        # 根据查询类型构建不同的搜索查询
+        query_templates = {
+            "resume": f"{job_title} resume tips best practices examples",
+            "interview": f"{job_title} interview questions answers preparation tips",
+            "cover_letter": f"{job_title} cover letter examples templates tips",
+            "salary": f"{job_title} salary range negotiation tips market value",
+            "skills": f"{job_title} required skills qualifications experience",
+            "general": f"{job_title} job search advice application tips"
+        }
+        
+        query = query_templates.get(query_type, query_templates["general"])
+        return await self._tavily_search({"query": query, "max_results": 5})
     
     def _format_search_result(self, response: Dict[str, Any], query: str) -> Dict[str, Any]:
         """格式化搜索结果"""

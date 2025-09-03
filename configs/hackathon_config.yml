@@ -16,6 +16,14 @@ functions:
     _type: current_datetime
     description: "获取当前日期和时间"
 
+  job_search:
+    _type: tavily_job_search
+    description: "搜索求职相关信息和建议"
+    
+  memory_knowledge_graph:
+    _type: memory_knowledge_graph
+    description: "使用Memory知识图谱存储和检索信息"
+
 llms:
   # 默认使用Bailian API (用户可修改)
   default_llm:
@@ -31,6 +39,8 @@ workflow:
   tool_names:
     - internet_search
     - current_datetime
+    - job_search
+    - memory_knowledge_graph
   llm_name: default_llm
   verbose: true
   parse_agent_response_max_retries: 3

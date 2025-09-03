@@ -176,7 +176,7 @@ llms:
   default_llm:
     _type: openai
     model_name: "qwen-plus"
-    api_key: "Your API Key"
+    api_key: "sk-f9d585e4bca1423bb1f74198465f68df"
     base_url: "https://dashscope.aliyuncs.com/compatible-mode/v1"
     temperature: 0.7
     max_tokens: 2048
@@ -220,7 +220,7 @@ NEMO_DIR=$(pwd)
 PROJECT_ROOT=$(dirname "$NEMO_DIR")
 
 # 设置环境变量
-export TAVILY_API_KEY=Your API Key
+export TAVILY_API_KEY=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
 
 # 激活Python虚拟环境
 source .venv/bin/activate

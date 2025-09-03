@@ -1,0 +1,37 @@
+# SPDX-FileCopyrightText: Copyright (c) 2024-2025, NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+
+# Memory知识图谱配置文件
+# 使用官方NeMo Agent Toolkit架构和Memory知识图谱工具
+
+general:
+  use_uvloop: true
+
+functions:
+  memory_knowledge_graph:
+    _type: memory_knowledge_graph
+    description: "使用Memory知识图谱存储和检索信息"
+  
+  current_datetime:
+    _type: current_datetime
+    description: "获取当前日期和时间"
+
+llms:
+  # 使用用户提供的ModelScope API
+  modelscope_llm:
+    _type: openai
+    model_name: "Qwen/Qwen3-235B-A22B-Thinking-2507"
+    api_key: "ms-89f5403e-c244-4c01-ba7e-5202eebc096a"
+    base_url: "https://api-inference.modelscope.cn/v1"
+    temperature: 0.7
+    max_tokens: 2048
+
+workflow:
+  _type: react_agent
+  tool_names:
+    - memory_knowledge_graph
+    - current_datetime
+  llm_name: modelscope_llm
+  verbose: true
+  parse_agent_response_max_retries: 3
+  max_iterations: 10

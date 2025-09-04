@@ -119,7 +119,7 @@ echo   # 默认使用ModelScope API ^(用户可修改^)
 echo   default_llm:
 echo     _type: openai
 echo     model_name: "Qwen/Qwen3-235B-A22B-Thinking-2507"
-echo     api_key: "ms-89f5403e-c244-4c01-ba7e-5202eebc096a"
+echo     api_key: "${MODELSCOPE_API_KEY}"
 echo     base_url: "https://api-inference.modelscope.cn/v1"
 echo     temperature: 0.7
 echo     max_tokens: 2048
@@ -186,20 +186,34 @@ echo pause
 
 (
 echo @echo off
-echo chcp 65001 ^>nul
-echo.
-echo echo 🛑 停止 NVIDIA NeMo Agent Toolkit AI对话机器人
-echo echo ==============================================
-echo.
-echo REM 停止相关进程
-echo taskkill /f /im python.exe 2^>nul
-echo taskkill /f /im node.exe 2^>nul
-echo.
-echo echo ✅ 所有服务已停止
-echo pause
-) > stop.bat
 
-echo ✅ 启动脚本创建完成
+REM Load API keys from configuration file
+if exist "api_keys.yml" (
+    for /f "tokens=2 delims=\"" %%a in ('findstr "TAVILY_API_KEY:" api_keys.yml') do set TAVILY_API_KEY=%%a
+    for /f "tokens=2 delims=\"" %%a in ('findstr "MODELSCOPE_API_KEY:" api_keys.yml') do set MODELSCOPE_API_KEY=%%a
+    for /f "tokens=2 delims=\"" %%a in ('findstr "BAILIAN_API_KEY:" api_keys.yml') do set BAILIAN_API_KEY=%%a
+) else (
+    echo Warning: api_keys.yml not found. Please create it with your API keys.
+)
+
+REM Create hackathon_config.yml with API key from configuration
+echo modelscope_llm: >> hackathon_config.yml
+echo   model: qwen/Qwen2.5-72B-Instruct >> hackathon_config.yml
+echo   api_key: "%MODELSCOPE_API_KEY%" >> hackathon_config.yml
+echo   base_url: https://dashscope.aliyuncs.com/compatible-mode/v1 >> hackathon_config.yml
+echo.
+echo workflow:
+echo   _type: react_agent
+echo   tool_names:
+echo     - tavily_search
+echo     - current_datetime
+echo   llm_name: default_llm
+echo   verbose: true
+echo   parse_agent_response_max_retries: 3
+echo   max_iterations: 10
+) > configs\hackathon_config.yml
+
+echo ✅ 配置文件创建完成
 
 echo.
 echo 🎉 安装完成！

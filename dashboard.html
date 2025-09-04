@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>求职助手 - 用户仪表板</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .logo {
+            color: white;
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            color: white;
+        }
+
+        .btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: #4CAF50;
+            color: white;
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .main-content {
+            flex: 1;
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .welcome-card {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            max-width: 600px;
+            width: 100%;
+        }
+
+        .welcome-card h1 {
+            color: #333;
+            margin-bottom: 1rem;
+        }
+
+        .welcome-card p {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 2rem;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .action-btn {
+            padding: 1rem 2rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            max-width: 800px;
+            width: 100%;
+        }
+
+        .feature-card {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 1.5rem;
+            border-radius: 10px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .feature-icon {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .feature-card h3 {
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+
+        .feature-card p {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 1rem 1.5rem;
+            border-radius: 5px;
+            color: white;
+            font-weight: 500;
+            z-index: 1000;
+            transform: translateX(100%);
+            transition: transform 0.3s ease;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        .notification.success {
+            background: #4CAF50;
+        }
+
+        .notification.error {
+            background: #f44336;
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                padding: 1rem;
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .main-content {
+                padding: 1rem;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="logo">🤖 AI求职助手</div>
+        <div class="user-info">
+            <span id="welcomeText">欢迎，用户</span>
+            <button class="btn btn-secondary" onclick="exportData()">导出数据</button>
+            <button class="btn btn-secondary" onclick="logout()">登出</button>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <div class="welcome-card">
+            <h1>欢迎使用AI求职助手</h1>
+            <p>您的个人求职助手已准备就绪。我们将帮助您管理求职信息、获取职位推荐，并记录您的求职历程。</p>
+            <div class="action-buttons">
+                <button class="action-btn" onclick="startJobAssistant()">开始求职咨询</button>
+                <button class="action-btn" onclick="viewMemory()">查看记忆库</button>
+            </div>
+        </div>
+
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">💼</div>
+                <h3>智能职位推荐</h3>
+                <p>基于您的技能和偏好，为您推荐最适合的职位机会</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🧠</div>
+                <h3>个人记忆库</h3>
+                <p>自动记录和整理您的求职相关信息，建立个人知识图谱</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">📊</div>
+                <h3>数据导出</h3>
+                <p>随时导出您的求职数据，便于备份和分析</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🔒</div>
+                <h3>隐私保护</h3>
+                <p>您的数据安全存储，只有您可以访问自己的信息</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="notification" class="notification"></div>
+
+    <script>
+        // 页面加载时检查用户状态
+        document.addEventListener('DOMContentLoaded', async function() {
+            const currentUser = getCurrentUser();
+            if (!currentUser) {
+                window.location.href = 'login.html';
+                return;
+            }
+
+            // 验证会话
+            const validatedUsername = await validateSession();
+            if (!validatedUsername) {
+                window.location.href = 'login.html';
+                return;
+            }
+
+            // 直接使用验证返回的用户名，确保显示正确
+            document.getElementById('welcomeText').textContent = `欢迎，${validatedUsername}`;
+        });
+
+        // API基础URL
+        const API_BASE = 'http://localhost:8001/api';
+
+        // 发送API请求的辅助函数
+        async function apiRequest(endpoint, method = 'GET', data = null) {
+            const options = {
+                method,
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            };
+            
+            const token = localStorage.getItem('sessionToken');
+            if (token) {
+                options.headers['Authorization'] = `Bearer ${token}`;
+            }
+            
+            if (data) {
+                options.body = JSON.stringify(data);
+            }
+            
+            try {
+                const response = await fetch(`${API_BASE}${endpoint}`, options);
+                const result = await response.json();
+                
+                if (!response.ok) {
+                    throw new Error(result.error || '请求失败');
+                }
+                
+                return result;
+            } catch (error) {
+                console.error('API请求错误:', error);
+                throw error;
+            }
+        }
+
+        // 验证会话
+        async function validateSession() {
+            try {
+                const result = await apiRequest('/validate');
+                return result.username;
+            } catch (error) {
+                localStorage.removeItem('sessionToken');
+                localStorage.removeItem('currentUser');
+                return null;
+            }
+        }
+
+        // 获取当前用户
+        function getCurrentUser() {
+            const user = localStorage.getItem('currentUser');
+            return user ? JSON.parse(user) : null;
+        }
+
+        // 登出
+        async function logout() {
+            try {
+                await apiRequest('/logout', 'POST');
+            } catch (error) {
+                console.error('登出错误:', error);
+            } finally {
+                localStorage.removeItem('sessionToken');
+                localStorage.removeItem('currentUser');
+                window.location.href = 'login.html';
+            }
+        }
+
+        // 导出数据
+        async function exportData() {
+            try {
+                const result = await apiRequest('/export');
+                
+                const blob = new Blob([JSON.stringify(result, null, 2)], {
+                    type: 'application/json'
+                });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `user_data_${new Date().toISOString().split('T')[0]}.json`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                
+                showNotification('数据导出成功！', 'success');
+            } catch (error) {
+                showNotification('导出失败: ' + error.message, 'error');
+            }
+        }
+
+        // 启动求职助手
+        async function startJobAssistant() {
+            try {
+                showNotification('正在启动求职助手...', 'success');
+                
+                // 获取当前用户信息
+                const currentUser = getCurrentUser();
+                if (!currentUser || !currentUser.username) {
+                    showNotification('用户信息不完整，请重新登录', 'error');
+                    window.location.href = 'login.html';
+                    return;
+                }
+                
+                // 设置Memory MCP服务器的当前用户
+                const response = await apiRequest('/set_user', 'POST', { username: currentUser.username });
+                
+                if (response.success) {
+                    // 跳转到AI助手界面
+                    window.open('http://localhost:3000', '_blank');
+                    showNotification('求职助手已启动，请在新窗口中使用', 'success');
+                } else {
+                    showNotification('启动失败：' + (response.message || '未知错误'), 'error');
+                }
+            } catch (error) {
+                console.error('启动求职助手失败:', error);
+                showNotification('启动失败，请稍后重试', 'error');
+            }
+        }
+
+        // 查看记忆库
+        function viewMemory() {
+            showNotification('记忆库功能正在开发中...', 'success');
+            // 这里可以显示用户的记忆数据
+        }
+
+        // 显示通知
+        function showNotification(message, type = 'success') {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.className = `notification ${type} show`;
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+    </script>
+</body>
+</html>

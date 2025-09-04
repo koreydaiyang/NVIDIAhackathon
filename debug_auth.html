@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>认证调试页面</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .debug-container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .info-section {
+            margin-bottom: 20px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .info-section h3 {
+            margin-top: 0;
+            color: #333;
+        }
+        .token-display {
+            background: #f8f8f8;
+            padding: 10px;
+            border-radius: 5px;
+            word-break: break-all;
+            font-family: monospace;
+        }
+        .button {
+            background: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .button:hover {
+            background: #0056b3;
+        }
+        .status {
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        .status.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .status.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+    </style>
+</head>
+<body>
+    <div class="debug-container">
+        <h1>认证调试页面</h1>
+        
+        <div class="info-section">
+            <h3>当前用户信息</h3>
+            <div id="userInfo">加载中...</div>
+        </div>
+        
+        <div class="info-section">
+            <h3>会话Token</h3>
+            <div id="tokenInfo" class="token-display">加载中...</div>
+        </div>
+        
+        <div class="info-section">
+            <h3>Token验证状态</h3>
+            <div id="validationStatus">未测试</div>
+            <button class="button" onclick="testToken()">测试Token</button>
+        </div>
+        
+        <div class="info-section">
+            <h3>操作</h3>
+            <button class="button" onclick="clearStorage()">清除本地存储</button>
+            <button class="button" onclick="goToLogin()">前往登录页面</button>
+            <button class="button" onclick="goToDashboard()">前往仪表板</button>
+        </div>
+    </div>
+
+    <script>
+        // 页面加载时显示信息
+        document.addEventListener('DOMContentLoaded', function() {
+            displayUserInfo();
+            displayTokenInfo();
+        });
+
+        function displayUserInfo() {
+            const currentUser = localStorage.getItem('currentUser');
+            const userInfoDiv = document.getElementById('userInfo');
+            
+            if (currentUser) {
+                try {
+                    const user = JSON.parse(currentUser);
+                    userInfoDiv.innerHTML = `
+                        <strong>用户名:</strong> ${user.username}<br>
+                        <strong>登录时间:</strong> ${user.loginTime}
+                    `;
+                } catch (e) {
+                    userInfoDiv.innerHTML = '<span style="color: red;">用户信息格式错误</span>';
+                }
+            } else {
+                userInfoDiv.innerHTML = '<span style="color: red;">未找到用户信息</span>';
+            }
+        }
+
+        function displayTokenInfo() {
+            const token = localStorage.getItem('sessionToken');
+            const tokenInfoDiv = document.getElementById('tokenInfo');
+            
+            if (token) {
+                tokenInfoDiv.textContent = token;
+            } else {
+                tokenInfoDiv.innerHTML = '<span style="color: red;">未找到会话Token</span>';
+            }
+        }
+
+        async function testToken() {
+            const statusDiv = document.getElementById('validationStatus');
+            const token = localStorage.getItem('sessionToken');
+            
+            if (!token) {
+                statusDiv.innerHTML = '<div class="status error">没有Token可测试</div>';
+                return;
+            }
+
+            try {
+                statusDiv.innerHTML = '<div class="status">测试中...</div>';
+                
+                const response = await fetch('http://localhost:8001/api/validate', {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok && result.valid) {
+                    statusDiv.innerHTML = `
+                        <div class="status success">
+                            <strong>Token有效!</strong><br>
+                            用户名: ${result.username}<br>
+                            用户ID: ${result.user_id}
+                        </div>
+                    `;
+                } else {
+                    statusDiv.innerHTML = `
+                        <div class="status error">
+                            <strong>Token无效</strong><br>
+                            状态码: ${response.status}<br>
+                            响应: ${JSON.stringify(result)}
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                statusDiv.innerHTML = `
+                    <div class="status error">
+                        <strong>测试失败</strong><br>
+                        错误: ${error.message}
+                    </div>
+                `;
+            }
+        }
+
+        function clearStorage() {
+            localStorage.removeItem('sessionToken');
+            localStorage.removeItem('currentUser');
+            alert('本地存储已清除');
+            location.reload();
+        }
+
+        function goToLogin() {
+            window.location.href = 'login.html';
+        }
+
+        function goToDashboard() {
+            window.location.href = 'dashboard.html';
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,64 @@
+# AI求职助手系统配置 - 带用户认证版本
+general:
+  name: "AI求职助手 - 多用户版"
+  description: "支持用户认证和个人数据存储的AI求职助手系统"
+  version: "2.0.0"
+  author: "Hackathon Team"
+
+# 可用功能配置
+functions:
+  - name: "internet_search"
+    description: "搜索互联网获取最新信息"
+    enabled: true
+    
+  - name: "current_datetime"
+    description: "获取当前日期和时间"
+    enabled: true
+    
+  - name: "job_search"
+    description: "搜索职位信息和求职建议"
+    enabled: true
+    
+  - name: "memory_knowledge_graph"
+    description: "个人记忆知识图谱 - 多用户支持"
+    enabled: true
+    config:
+      server_url: "http://localhost:8000"
+      user_storage_path: "memory_storage/users"
+      auto_save: true
+
+# 用户认证配置
+authentication:
+  enabled: true
+  server_url: "http://localhost:8001"
+  session_timeout: 3600  # 1小时
+  require_login: true
+
+# LLM配置
+llm:
+  default_model: "nvidia/llama-3.1-nemotron-70b-instruct"
+  temperature: 0.7
+  max_tokens: 4096
+  
+# 工作流配置
+workflow:
+  type: "react_agent"
+  max_iterations: 10
+  enable_memory: true
+  user_context_aware: true
+  
+# 服务器配置
+server:
+  host: "0.0.0.0"
+  port: 8001
+  cors_enabled: true
+  allowed_origins:
+    - "http://localhost:3000"
+    - "http://localhost:8080"
+    
+# 日志配置
+logging:
+  level: "INFO"
+  file: "logs/ai_assistant_auth.log"
+  max_size: "10MB"
+  backup_count: 5

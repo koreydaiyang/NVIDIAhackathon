@@ -1,1 +1,7 @@
 install.sh
+
+# API Keys Configuration - DO NOT COMMIT
+api_keys.yml
+api_keys.yaml
+*.api_keys.yml
+*.api_keys.yaml

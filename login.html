@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>求职助手 - 登录</title>
+    <link rel="stylesheet" href="login.css">
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-card">
+            <div class="login-header">
+                <h1>求职助手</h1>
+                <p>您的个人化AI求职顾问</p>
+            </div>
+            
+            <form id="loginForm" class="login-form">
+                <div class="form-group">
+                    <label for="username">用户名</label>
+                    <input type="text" id="username" name="username" required placeholder="请输入您的用户名">
+                </div>
+                
+                <div class="form-group">
+                    <label for="password">密码</label>
+                    <input type="password" id="password" name="password" required placeholder="请输入密码">
+                </div>
+                
+                <button type="submit" class="login-btn">登录</button>
+                
+                <div class="form-footer">
+                    <p>还没有账户？ <a href="#" id="registerLink">立即注册</a></p>
+                </div>
+            </form>
+            
+            <!-- 注册表单 -->
+            <form id="registerForm" class="login-form hidden">
+                <div class="form-group">
+                    <label for="regUsername">用户名</label>
+                    <input type="text" id="regUsername" name="username" required placeholder="请输入用户名">
+                </div>
+                
+                <div class="form-group">
+                    <label for="regPassword">密码</label>
+                    <input type="password" id="regPassword" name="password" required placeholder="请输入密码">
+                </div>
+                
+                <div class="form-group">
+                    <label for="confirmPassword">确认密码</label>
+                    <input type="password" id="confirmPassword" name="confirmPassword" required placeholder="请再次输入密码">
+                </div>
+                
+                <button type="submit" class="login-btn">注册</button>
+                
+                <div class="form-footer">
+                    <p>已有账户？ <a href="#" id="loginLink">立即登录</a></p>
+                </div>
+            </form>
+        </div>
+        
+        <div class="features">
+            <div class="feature-item">
+                <div class="feature-icon">🎯</div>
+                <h3>个性化建议</h3>
+                <p>基于您的背景和经验提供定制化求职建议</p>
+            </div>
+            <div class="feature-item">
+                <div class="feature-icon">💾</div>
+                <h3>数据存储</h3>
+                <p>安全存储您的求职信息，随时访问和下载</p>
+            </div>
+            <div class="feature-item">
+                <div class="feature-icon">🚀</div>
+                <h3>智能分析</h3>
+                <p>AI驱动的简历优化和面试准备建议</p>
+            </div>
+        </div>
+    </div>
+    
+    <div id="notification" class="notification hidden"></div>
+    
+    <script src="login.js"></script>
+</body>
+</html>

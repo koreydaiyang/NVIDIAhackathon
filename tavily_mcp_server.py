@@ -23,26 +23,12 @@ from mcp.types import (
 
 from tavily import TavilyClient
 
-import yaml
-import os
-import sys
-from pathlib import Path
+# 配置日志
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
-# Add the current directory to Python path to import load_api_keys
-sys.path.insert(0, str(Path(__file__).parent))
-
-try:
-    from load_api_keys import load_api_keys
-    # Load API keys from configuration file
-    load_api_keys()
-except ImportError:
-    print("Warning: Could not import load_api_keys. Using environment variables directly.")
-
-# Get API key from environment variable
-TAVILY_API_KEY = os.getenv('TAVILY_API_KEY', 'Your API Key')
-
-if TAVILY_API_KEY == 'Your API Key':
-    print("Warning: TAVILY_API_KEY not set. Please configure your API keys in api_keys.yml")
+# Tavily API配置
+TAVILY_API_KEY = "Your API Key"
 
 class TavilyMCPServer:
     """Tavily MCP服务器类"""
@@ -292,20 +278,4 @@ async def main():
 
 if __name__ == "__main__":
     asyncio.run(main())
-
-
-# Load API keys from configuration file
-def load_api_keys():
-    api_keys_file = "api_keys.yml"
-    if os.path.exists(api_keys_file):
-        with open(api_keys_file, 'r') as f:
-            config = yaml.safe_load(f)
-            return config
-    else:
-        print(f"Warning: {api_keys_file} not found. Please create it with your API keys.")
-        return {}
-
-# Load configuration
-api_config = load_api_keys()
-TAVILY_API_KEY = api_config.get('TAVILY_API_KEY', 'Your API Key')
 

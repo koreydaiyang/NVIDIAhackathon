@@ -1,52 +1,87 @@
 #!/bin/bash
 
-# Load API keys from configuration file
-echo "Loading API keys from api_keys.yml..."
-python3 load_api_keys.py
+echo "🚀 启动带用户认证的AI求职助手系统"
+echo "============================================"
 
-if [ $? -ne 0 ]; then
-    echo "Failed to load API keys. Please check your api_keys.yml file."
+# 获取项目根目录
+PROJECT_ROOT=$(pwd)
+
+# 设置环境变量
+export TAVILY_API_KEY=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
+
+# 检查虚拟环境
+if [ ! -d ".venv" ]; then
+    echo "❌ 虚拟环境不存在，请先运行 python -m venv .venv"
     exit 1
 fi
 
-# Load API keys into environment variables using Python
-if [ -f "api_keys.yml" ]; then
-    # Use Python to parse YAML and export variables
-    eval $(python3 -c "
-import yaml
-import os
-try:
-    with open('api_keys.yml', 'r') as f:
-        config = yaml.safe_load(f)
-    for key, value in config.items():
-        if isinstance(value, str) and value.strip():
-            print(f'export {key}=\"{value}\"')
-except Exception as e:
-    print(f'echo \"Error loading API keys: {e}\"', file=sys.stderr)
-")
-else
-    echo "Warning: api_keys.yml not found. Please create it with your API keys."
-    echo "You can copy from api_keys.yml.template and fill in your actual keys."
-fi
+# 激活Python虚拟环境
+source .venv/bin/activate
 
-# Start the authentication server
-echo "Starting authentication server..."
+# 启动用户认证服务器
+echo "🔐 启动用户认证服务器..."
 python auth_server.py &
 AUTH_PID=$!
 echo $AUTH_PID > .auth.pid
 
-# Start the static file server for the frontend
-echo "Starting static file server..."
-python -m http.server 8081 &
+# 等待认证服务器启动
+echo "⏳ 等待认证服务器启动..."
+sleep 3
+
+# 启动Memory MCP服务器
+echo "🧠 启动Memory MCP服务器..."
+bash start_memory_mcp.sh &
+MEMORY_PID=$!
+
+# 等待Memory服务器启动
+sleep 2
+
+# 进入NeMo目录并启动后端服务
+echo "📡 启动后端AI服务..."
+cd "$PROJECT_ROOT/NeMo-Agent-Toolkit"
+source .venv/bin/activate
+aiq serve --config_file ../configs/hackathon_config.yml --host 0.0.0.0 --port 8001 &
+BACKEND_PID=$!
+echo $BACKEND_PID > .backend.pid
+
+# 等待后端启动
+echo "⏳ 等待后端AI服务启动..."
+sleep 10
+
+# 启动前端服务
+echo "🎨 启动前端服务..."
+cd "$PROJECT_ROOT/external/aiqtoolkit-opensource-ui"
+npm run dev &
+FRONTEND_PID=$!
+echo $FRONTEND_PID > .frontend.pid
+
+# 返回项目根目录
+cd "$PROJECT_ROOT"
+
+echo ""
+echo "✅ 系统启动完成！"
+echo ""
+echo "🌐 访问地址:"
+echo "   用户登录: http://localhost:8080/login.html"
+echo "   用户面板: http://localhost:8080/dashboard.html"
+echo "   AI对话:  http://localhost:3000"
+echo "   认证API: http://localhost:8001"
+echo "   后端API: http://localhost:8001/docs"
+echo ""
+echo "📝 使用流程:"
+echo "   1. 访问登录页面注册/登录账户"
+echo "   2. 登录成功后进入用户面板"
+echo "   3. 点击'开始求职咨询'使用AI助手"
+echo "   4. 所有对话记录将保存到您的个人记忆库"
+echo ""
+echo "🛑 停止服务: 按 Ctrl+C 或运行 ./stop_with_auth.sh"
+echo ""
+
+# 启动简单的HTTP服务器来提供静态文件
+echo "🌐 启动静态文件服务器..."
+python -m http.server 8080 &
 STATIC_PID=$!
 echo $STATIC_PID > .static.pid
 
-echo "Servers started:"
-echo "- Authentication server: http://localhost:8080"
-echo "- Static file server: http://localhost:8081"
-echo "- Dashboard: http://localhost:8080/dashboard.html"
-echo ""
-echo "To stop servers, run: ./stop_with_auth.sh"
-
-# Wait for servers
+# 等待用户中断
 wait

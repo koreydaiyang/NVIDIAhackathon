@@ -58,9 +58,8 @@ cd hackathon_aiqtoolkit
 在`install.sh`文件中185行左右，将Your API Key替换成你自己的Tavily API Key 来保证搜索功能正常
 ```bash
 # 设置环境变量
-export TAVILY_API_KEY=your-tavily-api-key-here
+export TAVILY_API_KEY=Your API Key
 ```
-
 **获取Tavily API密钥**：
 1. 访问 [Tavily官网](https://tavily.com/)
 2. 注册账户并获取免费API密钥
@@ -68,7 +67,7 @@ export TAVILY_API_KEY=your-tavily-api-key-here
 
 #### 2. 大模型API密钥
 
-编辑配置文件，将API key设置为环境变量：
+编辑 `install.sh` 文件中154行左右,将Your API Key替换成你自己的Bailian API Key：
 
 ```yaml
 llms:
@@ -76,7 +75,7 @@ llms:
   default_llm:
     _type: openai
     model_name: "qwen-plus"
-    api_key: "${BAILIAN_API_KEY}"
+    api_key: "Your API Key"
     base_url: "https://dashscope.aliyuncs.com/compatible-mode/v1"
     temperature: 0.7
     max_tokens: 2048
@@ -268,139 +267,7 @@ npm run dev -- --verbose
 
 ---
 
-**🎯 我们自己探索AI Agent的无限可能！**
+**🎯 让我们一起探索AI Agent的无限可能！**
 
-> 本项目展示了NVIDIA NeMo Agent Toolkit在实际应用中的强大能力，为AI Agent技术的普及化和发展贡献力量。无论您是AI初学者还是资深开发者，都能从这个项目中获得有价值的学习体验。
-
-
-# AI Toolkit Hackathon Project
-
-## API Keys Configuration
-
-为了安全起见，所有API keys现在统一管理在一个配置文件中。
-
-### 快速开始
-
-1. **复制API keys模板文件**：
-   ```bash
-   cp api_keys.yml.template api_keys.yml
-   ```
-
-2. **编辑api_keys.yml文件**，填入您的实际API keys：
-   ```yaml
-   # 必需的API Keys
-   MODELSCOPE_API_KEY: "your-actual-modelscope-api-key"
-   TAVILY_API_KEY: "your-actual-tavily-api-key"
-   
-   # 可选的API Keys（根据需要配置）
-   OPENAI_API_KEY: "your-openai-api-key"
-   NVIDIA_API_KEY: "your-nvidia-api-key"
-   BAILIAN_API_KEY: "your-bailian-api-key"
-   # ... 其他API keys
-   ```
-
-3. **启动项目**：
-   ```bash
-   # Linux/macOS
-   ./start_with_auth.sh
-   
-   # Windows
-   install.bat
-   ```
-
-### API Keys说明
-
-| API Key | 用途 | 必需性 |
-|---------|------|--------|
-| MODELSCOPE_API_KEY | ModelScope LLM服务 | 必需 |
-| TAVILY_API_KEY | Tavily搜索服务 | 必需 |
-| OPENAI_API_KEY | OpenAI服务 | 可选 |
-| NVIDIA_API_KEY | NVIDIA服务 | 可选 |
-| BAILIAN_API_KEY | 阿里云百炼服务 | 可选 |
-
-### 安全注意事项
-
-⚠️ **重要提醒**：
-- `api_keys.yml`文件已被添加到`.gitignore`中，**不会**被提交到版本控制系统
-- 请妥善保管您的API keys，不要在公开场合分享
-- 如需分享项目，请使用`api_keys.yml.template`模板文件
-- 定期更换API keys以确保安全
-
-### 故障排除
-
-如果遇到API key相关问题：
-
-1. **检查文件是否存在**：
-   ```bash
-   ls -la api_keys.yml
-   ```
-
-2. **验证文件格式**：
-   ```bash
-   python3 -c "import yaml; print(yaml.safe_load(open('api_keys.yml')))"
-   ```
-
-3. **检查环境变量**：
-   ```bash
-   echo $MODELSCOPE_API_KEY
-   ```
-
-### 开发者指南
-
-如果您需要在代码中使用API keys：
-
-```python
-# 推荐方式：使用环境变量
-import os
-api_key = os.getenv('MODELSCOPE_API_KEY')
-
-# 或者使用提供的工具函数
-from load_api_keys import load_api_keys
-keys = load_api_keys()
-api_key = keys.get('MODELSCOPE_API_KEY')
-```
-
-## 项目启动
-
-配置完API keys后，您可以启动项目：
-
-```bash
-# 启动带认证的服务
-./start_with_auth.sh
-```
-
-访问 http://localhost:8080/dashboard.html 开始使用。
-
----
-
-## 实施完成总结
-
-✅ **已完成的API Keys统一管理方案**：
-
-### 1. 配置文件系统
-- ✅ 创建了`api_keys.yml`统一配置文件
-- ✅ 提供了`api_keys.yml.template`安全模板
-- ✅ 更新了`.gitignore`确保API keys不被提交
-
-### 2. 自动化加载机制
-- ✅ 创建了`load_api_keys.py`Python工具
-- ✅ 修改了所有启动脚本以自动加载API keys
-- ✅ 配置文件现在使用环境变量引用
-
-### 3. 跨平台支持
-- ✅ Linux/macOS: `start_with_auth.sh`
-- ✅ Windows: `install.bat`
-- ✅ Python: `load_api_keys.py`
-
-### 4. 安全性提升
-- ✅ API keys不再硬编码在配置文件中
-- ✅ 统一管理，便于维护和更新
-- ✅ 版本控制安全，实际keys不会被提交
-
-### 5. 用户体验
-- ✅ 简单的配置流程
-- ✅ 详细的文档说明
-- ✅ 错误提示和故障排除指南
-
-现在您的项目已经具备了安全、统一的API keys管理系统！
+> 本项目展示了NVIDIA NeMo Agent Toolkit在实际应用中的强大能力，为AI Agent技术的普及和发展贡献力量。无论您是AI初学者还是资深开发者，都能从这个项目中获得有价值的学习体验。
 

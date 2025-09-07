@@ -275,6 +275,10 @@ class AuthHandler(BaseHTTPRequestHandler):
             elif path == '/api/set_user':
                 self._handle_set_user()
             
+            # 处理静态文件请求
+            elif path in ['/login.html', '/dashboard.html', '/login.css', '/login.js']:
+                self._serve_static_file(path)
+            
             else:
                 self.send_json_response({"error": "未找到接口"}, 404)
         
@@ -320,6 +324,41 @@ class AuthHandler(BaseHTTPRequestHandler):
         except Exception as e:
             print(f"设置用户时出错: {e}")
             self.send_json_response({"error": "设置用户失败"}, 500)
+    
+    def _serve_static_file(self, path):
+        """服务静态文件"""
+        try:
+            # 移除开头的斜杠
+            filename = path.lstrip('/')
+            
+            # 检查文件是否存在
+            if not os.path.exists(filename):
+                self.send_response(404)
+                self.end_headers()
+                self.wfile.write(b'File not found')
+                return
+            
+            # 确定内容类型
+            content_type = 'text/html'
+            if filename.endswith('.css'):
+                content_type = 'text/css'
+            elif filename.endswith('.js'):
+                content_type = 'application/javascript'
+            
+            # 读取并发送文件
+            with open(filename, 'r', encoding='utf-8') as f:
+                content = f.read()
+            
+            self.send_response(200)
+            self.send_cors_headers()
+            self.send_header('Content-Type', content_type + '; charset=utf-8')
+            self.end_headers()
+            self.wfile.write(content.encode('utf-8'))
+            
+        except Exception as e:
+            self.send_response(500)
+            self.end_headers()
+            self.wfile.write(f'Error serving file: {str(e)}'.encode('utf-8'))
     
     def do_GET(self):
         """处理GET请求"""
@@ -371,6 +410,10 @@ class AuthHandler(BaseHTTPRequestHandler):
             
             elif path == '/api/set_user':
                 self._handle_set_user()
+            
+            # 处理静态文件请求
+            elif path in ['/login.html', '/dashboard.html', '/login.css', '/login.js']:
+                self._serve_static_file(path)
             
             else:
                 self.send_json_response({"error": "未找到接口"}, 404)

@@ -363,31 +363,46 @@
 
         // 启动求职助手
         async function startJobAssistant() {
-            try {
-                showNotification('正在启动求职助手...', 'success');
+            window.location.href = 'http://localhost:3000';
+            // try {
+            //     showNotification('正在启动求职助手...', 'success');
                 
-                // 获取当前用户信息
-                const currentUser = getCurrentUser();
-                if (!currentUser || !currentUser.username) {
-                    showNotification('用户信息不完整，请重新登录', 'error');
-                    window.location.href = 'login.html';
-                    return;
-                }
-                
-                // 设置Memory MCP服务器的当前用户
-                const response = await apiRequest('/set_user', 'POST', { username: currentUser.username });
-                
-                if (response.success) {
-                    // 跳转到AI助手界面
-                    window.open('http://localhost:3000', '_blank');
-                    showNotification('求职助手已启动，请在新窗口中使用', 'success');
-                } else {
-                    showNotification('启动失败：' + (response.message || '未知错误'), 'error');
-                }
-            } catch (error) {
-                console.error('启动求职助手失败:', error);
-                showNotification('启动失败，请稍后重试', 'error');
-            }
+            //     // 获取当前用户信息
+            //     const currentUser = getCurrentUser();
+            //     if (!currentUser || !currentUser.username) {
+            //         showNotification('用户信息不完整，请重新登录', 'error');
+            //         window.location.href = 'login.html';
+            //         return;
+            //     }
+            //     window.location.href = 'http://localhost:3000';
+
+            //     // 设置Memory MCP服务器的当前用户 - 直接调用Memory MCP服务器
+            //     try {
+            //         const memoryResponse = await fetch('http://localhost:8001/api/set_user', {
+            //             method: 'POST',
+            //             headers: {
+            //                 'Content-Type': 'application/json',
+            //                 'Authorization': `Bearer ${localStorage.getItem('sessionToken')}`
+            //             },
+            //             body: JSON.stringify({ username: currentUser.username })
+            //         });
+                    
+            //         if (memoryResponse.ok) {
+            //             // 直接跳转到AI助手界面
+            //             window.location.href = 'http://localhost:3000';
+            //         } else {
+            //             window.location.href = 'http://localhost:3000';
+            //             showNotification('启动失败：无法设置用户上下文', 'error');
+            //         }
+            //     } catch (memoryError) {
+            //         console.warn('Memory MCP服务器连接失败，直接跳转:', memoryError);
+            //         // 即使Memory MCP服务器连接失败，也允许跳转
+            //         window.location.href = 'http://localhost:3000';
+            //     }
+            // } catch (error) {
+            //     console.error('启动求职助手失败:', error);
+            //     showNotification('启动失败，请稍后重试', 'error');
+            // }
         }
 
         // 查看记忆库

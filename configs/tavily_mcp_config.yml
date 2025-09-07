@@ -35,4 +35,3 @@ workflow:
   verbose: true
   parse_agent_response_max_retries: 3
   max_iterations: 10
-

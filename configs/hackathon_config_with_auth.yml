@@ -1,64 +1,47 @@
-# AI求职助手系统配置 - 带用户认证版本
+# SPDX-FileCopyrightText: Copyright (c) 2024-2025, NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+
+# NVIDIA NeMo Agent Toolkit 黑客松配置 - 带用户认证版本
+# 支持用户自定义OpenAI兼容API和多用户认证
+
 general:
-  name: "AI求职助手 - 多用户版"
-  description: "支持用户认证和个人数据存储的AI求职助手系统"
-  version: "2.0.0"
-  author: "Hackathon Team"
+  use_uvloop: true
 
-# 可用功能配置
 functions:
-  - name: "internet_search"
-    description: "搜索互联网获取最新信息"
-    enabled: true
-    
-  - name: "current_datetime"
+  internet_search:
+    _type: tavily_internet_search
+    description: "使用Tavily API进行实时网络搜索"
+  
+  current_datetime:
+    _type: current_datetime
     description: "获取当前日期和时间"
-    enabled: true
-    
-  - name: "job_search"
-    description: "搜索职位信息和求职建议"
-    enabled: true
-    
-  - name: "memory_knowledge_graph"
-    description: "个人记忆知识图谱 - 多用户支持"
-    enabled: true
-    config:
-      server_url: "http://localhost:8000"
-      user_storage_path: "memory_storage/users"
-      auto_save: true
 
-# 用户认证配置
-authentication:
-  enabled: true
-  server_url: "http://localhost:8001"
-  session_timeout: 3600  # 1小时
-  require_login: true
+  job_search:
+    _type: tavily_job_search
+    description: "搜索求职相关信息和建议"
+    
+  memory_knowledge_graph:
+    _type: memory_knowledge_graph
+    description: "使用Memory知识图谱存储和检索信息 - 多用户支持"
 
-# LLM配置
-llm:
-  default_model: "nvidia/llama-3.1-nemotron-70b-instruct"
-  temperature: 0.7
-  max_tokens: 4096
-  
-# 工作流配置
+llms:
+  # 默认使用Bailian API (用户可修改)
+  default_llm:
+    _type: openai
+    model_name: "qwen-plus"
+    api_key: "sk-3c77827b7e9144b6b9820bc87be1e740"
+    base_url: "https://dashscope.aliyuncs.com/compatible-mode/v1"
+    temperature: 0.7
+    max_tokens: 2048
+
 workflow:
-  type: "react_agent"
+  _type: react_agent
+  tool_names:
+    - internet_search
+    - current_datetime
+    - job_search
+    - memory_knowledge_graph
+  llm_name: default_llm
+  verbose: true
+  parse_agent_response_max_retries: 3
   max_iterations: 10
-  enable_memory: true
-  user_context_aware: true
-  
-# 服务器配置
-server:
-  host: "0.0.0.0"
-  port: 8001
-  cors_enabled: true
-  allowed_origins:
-    - "http://localhost:3000"
-    - "http://localhost:8080"
-    
-# 日志配置
-logging:
-  level: "INFO"
-  file: "logs/ai_assistant_auth.log"
-  max_size: "10MB"
-  backup_count: 5
